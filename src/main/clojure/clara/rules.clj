@@ -220,6 +220,16 @@ use it as follows:
            ~name (assoc :name ~(str (clojure.core/name (ns-name *ns*)) "/" (clojure.core/name name)))
            ~doc (assoc :doc ~doc)))))
 
+(defmacro make-rule [name & body ]
+  (let [doc (if (string? (first body)) (first body) nil)
+        body (if doc (rest body) body)
+        properties (if (map? (first body)) (first body) nil)
+        definition (if properties (rest body) body)
+        {:keys [lhs rhs]} (dsl/split-lhs-rhs definition)]
+    `(cond-> ~(dsl/parse-rule* lhs rhs properties {})
+             ~name (assoc :name ~name)
+             ~doc (assoc :doc ~doc))))
+
 (defmacro defquery
   "Defines a query and stored it in the given var. For instance, a simple query that accepts no
    parameters would look like this:
@@ -238,4 +248,12 @@ use it as follows:
     `(def ~(vary-meta name assoc :query true :doc doc)
        (cond-> ~(dsl/parse-query* binding definition {})
                ~name (assoc :name ~(str (clojure.core/name (ns-name *ns*)) "/" (clojure.core/name name)))
-                ~doc (assoc :doc ~doc)))))
+               ~doc (assoc :doc ~doc)))))
+
+(defmacro make-query [name & body]
+  (let [doc (if (string? (first body)) (first body) nil)
+        binding (if doc (second body) (first body))
+        definition (if doc (drop 2 body) (rest body) )]
+    `(cond-> ~(dsl/parse-query* binding definition {})
+             ~name (assoc :name ~name)
+             ~doc (assoc :doc ~doc))))
