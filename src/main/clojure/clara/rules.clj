@@ -226,6 +226,9 @@ use it as follows:
         properties (if (map? (first body)) (first body) nil)
         definition (if properties (rest body) body)
         {:keys [lhs rhs]} (dsl/split-lhs-rhs definition)]
+    (when-not rhs
+      (throw (ex-info (str "Invalid rule " name ". No RHS (missing =>?).")
+                      {})))
     (list 'cond-> (dsl/parse-rule* lhs rhs properties {})
           (list 'quote name) `(assoc :name '~name)
           doc `(assoc :doc ~doc))))
