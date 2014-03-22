@@ -226,9 +226,9 @@ use it as follows:
         properties (if (map? (first body)) (first body) nil)
         definition (if properties (rest body) body)
         {:keys [lhs rhs]} (dsl/split-lhs-rhs definition)]
-    `(cond-> ~(dsl/parse-rule* lhs rhs properties {})
-             ~name (assoc :name ~name)
-             ~doc (assoc :doc ~doc))))
+    (list 'cond-> (dsl/parse-rule* lhs rhs properties {})
+          (list 'quote name) `(assoc :name '~name)
+          doc `(assoc :doc ~doc))))
 
 (defmacro defquery
   "Defines a query and stored it in the given var. For instance, a simple query that accepts no
@@ -255,5 +255,5 @@ use it as follows:
         binding (if doc (second body) (first body))
         definition (if doc (drop 2 body) (rest body) )]
     `(cond-> ~(dsl/parse-query* binding definition {})
-             ~name (assoc :name ~name)
+             '~name (assoc :name '~name)
              ~doc (assoc :doc ~doc))))

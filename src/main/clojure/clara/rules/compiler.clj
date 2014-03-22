@@ -502,7 +502,6 @@
   [alpha-nodes :- [schema/AlphaNode]]
   (for [{:keys [condition beta-children env]} alpha-nodes
         :let [{:keys [type constraints cmeta fact-binding args]} condition]]
-
     (cond-> {:type (effective-type type)
              :alpha-fn (binding [*file* (or (:file cmeta) *file*)]
                          (eval (with-meta
