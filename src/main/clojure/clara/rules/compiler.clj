@@ -711,9 +711,6 @@
                              %)
                           sources) ;; Load rules from the source, or
                                    ;; just use the input as a seq.
-             _  (do (println "Productions:")
-                    (doseq [p productions ]
-                      (println "\t" (-> p :name))))
              session (mk-session* productions options)]
 
          ;; Cache the session unless instructed not to.
